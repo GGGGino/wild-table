@@ -37,9 +37,10 @@ export function createStencilTable<TData extends RowData>(
     // Similarly, we'll maintain both our internal state and any user-provided
     // state.
     onStateChange: updater => {
-      console.log('ciao');
+      console.log('ciao', updater);
+      console.log(table.getState());
     },
-  }))
+  }));
 
   return table;
 }

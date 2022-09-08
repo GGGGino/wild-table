@@ -101,50 +101,69 @@ export class MyComponent {
       getCoreRowModel: getCoreRowModel(),
     });
 
-    return <table>
-    <thead>
-      {table.getHeaderGroups().map(headerGroup => (
-        <tr key={headerGroup.id}>
-          {headerGroup.headers.map(header => (
-            <th key={header.id}>
-              {header.isPlaceholder
-                ? null
-                : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-            </th>
-          ))}
-        </tr>
-      ))}
-    </thead>
-    <tbody>
-      {table.getRowModel().rows.map(row => (
-        <tr key={row.id}>
-          {row.getVisibleCells().map(cell => (
-            <td key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          ))}
-        </tr>
-      ))}
-    </tbody>
-    <tfoot>
-      {table.getFooterGroups().map(footerGroup => (
-        <tr key={footerGroup.id}>
-          {footerGroup.headers.map(header => (
-            <th key={header.id}>
-              {header.isPlaceholder
-                ? null
-                : flexRender(
-                    header.column.columnDef.footer,
-                    header.getContext()
-                  )}
-            </th>
-          ))}
-        </tr>
-      ))}
-    </tfoot>
-  </table>;
+    return <table
+          {...{
+            style: {
+              width: table.getCenterTotalSize().toString(),
+            },
+          }}
+        >
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    {...{
+                      key: header.id,
+                      colSpan: header.colSpan,
+                      style: {
+                        width: header.getSize().toString(),
+                      },
+                    }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    <div
+                      {...{
+                        onMouseDown: header.getResizeHandler(),
+                        onTouchStart: header.getResizeHandler(),
+                        className: `resizer ${
+                          header.column.getIsResizing() ? 'isResizing' : ''
+                        }`,
+                        style: {
+                          transform: `translateX(${
+                            table.getState().columnSizingInfo.deltaOffset
+                          }px)`,
+                        },
+                      }}
+                    />
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td
+                    {...{
+                      key: cell.id,
+                      style: {
+                        width: cell.column.getSize().toString(),
+                      },
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>;
   }
 }
